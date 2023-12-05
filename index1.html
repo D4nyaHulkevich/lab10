@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Однорукий бандит</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #556B2F;
+            color: #3CB371;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1, #money, #result {
+            color: #8043001;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #4B0082;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        td {
+            width: 100px;
+            height: 150px;
+            border: 2px solid #4B0082;
+            font-size: 36px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #DAA520;
+            position: relative;
+            overflow: hidden;
+        }
+
+        td:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            opacity: 0.3;
+        }
+
+        td:nth-child(1):before {
+            background: 
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+        }
+
+        td:nth-child(2):before {
+            background:
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+        }
+
+        td:nth-child(3):before {
+            background:
+            width: 60%;
+            height: 60%;
+            border-radius: 50%;
+        }
+
+        button {
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #e74c3c;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        #result {
+            font-size: 24px;
+            margin-top: 10px;
+            color: #e44d26;
+        }
+
+        @keyframes rotate {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0%); }
+        }
+
+        td.rotating {
+            animation: rotate 1s ease-in-out 1;
+            animation-fill-mode: forwards;
+        }
+
+        button.clicked {
+            animation: none !important;
+        }
+
+        #instructions {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #00BFFF;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            color: #000; 
+        }
+
+        #instructions h2 {
+            color: #e74c3c;
+        }
+
+        #instructions ol {
+            margin-top: 10px;
+        }
+
+        #instructions ul {
+            margin-top: 10px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #instructions li {
+            margin-bottom: 10px;
+        }
+
+        #instructions p {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let money = 1000;
+		let images = [];
+
+        window.onload = function() {
+            const username = prompt('Введите ваше имя:');
+            if (username) {
+                document.getElementById('username').textContent = `Добро пожаловать, ${username}!`;
+                updateMoney();
+            }
+
+            document.querySelectorAll('#slotRow td').forEach(function(cell) {
+                cell.addEventListener('animationend', function() {
+                    cell.classList.remove('rotating');
+                });
+            });
+        };
+
+        function updateMoney() {
+            document.getElementById('money').textContent = `Гроші: ${money} грн`;
+        }
+
+        function getRandomImage() {
+            const images = ['🍒', '🍊', '🍇', '🍉', '🍋', '🍑', '💎'];
+            const randomIndex = Math.floor(Math.random() * images.length);
+            return images[randomIndex];
+        }
+
+        function checkWin() {
+            const cells = document.querySelectorAll('#slotRow td');
+            const images = Array.from(cells).map(cell => cell.innerHTML);
+
+            return images.every(img => img === images[0]);
+        }
+
+        const winLevels = {
+            '🍒': 20,
+            '🍊': 50,
+            '🍇': 100,
+            '🍉': 20,
+            '🍋': 50,
+            '🍑': 50,
+            '💎': 100,
+        };
+
+        function startGame() {
+    if (money >= 10) {
+        money -= 10;
+        updateMoney();
+
+        const username = document.getElementById('username').textContent;
+        const slotRow = document.getElementById('slotRow');
+        const resultElement = document.getElementById('result');
+
+        images = []; // Reset the images array before populating it
+
+        for (let i = 0; i < 3; i++) {
+            const cell = slotRow.cells[i];
+            const randomImage = getRandomImage();
+            cell.innerHTML = randomImage;
+            cell.classList.add('rotating');
+            images.push(randomImage); // Add the generated image to the images array
+        }
+
+        if (checkWin()) {
+    const winAmount = winLevels[images[0]];
+
+    if (winAmount) {
+        money += winAmount;
+        resultElement.textContent = `Поздравляем! Вы выиграли и получили ${winAmount} гривен!`;
+    }
+} else {
+    resultElement.textContent = `Попробуйте еще раз :(`;
+}
+
+        document.querySelector('button').classList.add('clicked');
+        updateMoney(); // Added the call to updateMoney after the game
+    } else {
+        alert('Недостаточно денег. Пополните счет!');
+    }
+}
+    </script>
+
+    <h1 id="username">Ласкаво просимо до гри "Однорукий бандит"!</h1>
+    <div id="money">Гроші: 100 грн</div>
+    <button onclick="startGame()">Почати гру</button>
+
+    <table>
+        <tr id="slotRow">
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <div id="result"></div>
+
+    <div id="instructions">
+        <h2>Інструкція та Правила</h2>
+        <p>Ласкаво просимо до гри "Однорукий бандит"! Ось кілька простих правил:</p>
+        <ol>
+            <li>Кожен раунд гри коштує 10 гривень.</li>
+            <li>Натискайте кнопку "Почати гру", щоб запустити барабани.</li>
+            <li>Якщо всі три барабани покажуть однакові символи, ви виграєте!</li>
+            <li>Виграш залежить від комбінації символів:
+                <ul>
+                    <li>🍒 - Низький виграш (20 гривень)</li>
+                    <li>🍊 - Середній виграш (50 гривень)</li>
+                    <li>🍇 - Високий виграш (100 гривень)</li>
+                </ul>
+            </li>
+            <li>Гра триває доти, доки у вас є гроші на рахунку.</li>
+        </ol>
+        <p>Грайте відповідально та вдалих вам виграші!</p>
+    </div>
+</body>
+</html>
